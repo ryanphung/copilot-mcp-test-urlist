@@ -13,6 +13,7 @@
     "@nanostores/preact": "^1.0.0",
     "@tailwindcss/vite": "^4.1.4",
     "astro": "^5.7.5",
+    "pg": "^8.15.5",
     "preact-router": "^4.1.2",
     "tailwindcss": "^4.1.4"
   }

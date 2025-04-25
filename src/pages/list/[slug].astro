@@ -1,0 +1,55 @@
+---
+export const prerender = false;
+import { Pool } from 'pg';
+import Layout from '../../layouts/Layout.astro';
+import '../../styles/global.css';
+
+const pool = new Pool({
+  connectionString: import.meta.env.DATABASE_URL,
+});
+
+const { slug } = Astro.params;
+let list = null;
+let links = [];
+let notFound = false;
+
+try {
+  const listResult = await pool.query('SELECT * FROM lists WHERE slug = $1', [slug]);
+  if (listResult.rows.length === 0) {
+    notFound = true;
+  } else {
+    list = listResult.rows[0];
+    const linksResult = await pool.query('SELECT * FROM links WHERE list_id = $1 ORDER BY created_at DESC', [list.id]);
+    links = linksResult.rows;
+  }
+} catch (e) {
+  console.error('Error loading list:', e);
+  notFound = true;
+}
+---
+
+<Layout>
+  {notFound ? (
+    <div class="max-w-xl mx-auto mt-12 text-center">
+      <h1 class="text-2xl font-bold mb-2">List not found</h1>
+      <p class="text-gray-500">Sorry, we couldn’t find a list with that URL.</p>
+    </div>
+  ) : (
+    <div class="max-w-xl mx-auto mt-12">
+      <h1 class="text-3xl font-bold mb-2">{list.title}</h1>
+      <p class="text-gray-600 mb-6">{list.description}</p>
+      <ul class="space-y-4">
+        {links.length === 0 ? (
+          <li class="text-gray-400 italic">No URLs in this list yet.</li>
+        ) : (
+          links.map(link => (
+            <li class="bg-white p-4 rounded shadow flex flex-col gap-1" key={link.id}>
+              <a href={link.url} class="font-semibold text-blue-600 text-lg" target="_blank" rel="noopener noreferrer">{link.title || link.url}</a>
+              {link.description && <div class="text-sm text-gray-500">{link.description}</div>}
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+  )}
+</Layout>
