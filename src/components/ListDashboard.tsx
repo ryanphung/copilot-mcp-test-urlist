@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/preact';
 import { listStore, addList, deleteList, fetchLists, updateList } from '../stores/listStore';
 import { useState, useEffect } from 'preact/hooks';
+import { decodeHtml } from '../utils/decodeHtml';
 
 export default function ListDashboard({ onSelect, selectedId }) {
   const { lists, isLoading, error } = useStore(listStore);
@@ -66,8 +67,8 @@ export default function ListDashboard({ onSelect, selectedId }) {
               onClick={() => onSelect && onSelect(list.id)}
             >
               <div>
-                <div className="font-semibold">{list.title}</div>
-                <div className="text-sm text-gray-500">{list.description}</div>
+                <div className="font-semibold">{decodeHtml(list.title)}</div>
+                <div className="text-sm text-gray-500">{decodeHtml(list.description)}</div>
                 {selectedId === list.id && (
                   <div className="mt-1 flex items-center gap-2">
                     <span className="text-xs text-gray-400">URL:</span>

@@ -1,5 +1,6 @@
 import { useState } from 'preact/hooks';
 import { updateLink, deleteLink } from '../stores/linkStore';
+import { decodeHtml } from '../utils/decodeHtml';
 
 export default function UrlListItem({ link }) {
   const [editing, setEditing] = useState(false);
@@ -76,8 +77,8 @@ export default function UrlListItem({ link }) {
   return (
     <li className="bg-white p-3 rounded shadow flex justify-between items-center">
       <div>
-        <a href={link.url} className="font-semibold text-blue-600" target="_blank" rel="noopener noreferrer">{link.title || link.url}</a>
-        <div className="text-sm text-gray-500">{link.description}</div>
+        <a href={link.url} className="font-semibold text-blue-600" target="_blank" rel="noopener noreferrer">{decodeHtml(link.title) || decodeHtml(link.url)}</a>
+        <div className="text-sm text-gray-500">{decodeHtml(link.description)}</div>
       </div>
       <div className="flex gap-2">
         <button
